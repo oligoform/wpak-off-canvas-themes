@@ -1,8 +1,8 @@
 <!--
-Theme Name: Wpak Off-Canvas (Android)
+Theme Name: Wpak Off-Canvas Android
 Description: A simple off-canvas menu WP-AppKit theme for Android
-Version: 1.0
-Theme URI: https://github.com/uncatcrea/wpak-off-canvas-themes
+Version: 1.5-beta-1
+Theme URI: https://github.com/uncatcrea/wp-appkit-themes
 Author: UncatCrea			
 Author URI: getwpappkit.com
 -->
