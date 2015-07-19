@@ -77,7 +77,7 @@ define(['jquery','core/theme-app','core/modules/storage','core/theme-tpl-tags','
 		// A Post or a Page is displayed
         if (current_screen.screen_type=="single"||current_screen.screen_type=="page") {
 			cleanImgTag(); // Prepare <img> tags for styling
-            $("#container").on("click",".single-template a",openInBrowser); // Redirect all hyperlinks clicks
+            $("#app-layout").on("click",".single-template a",openInBrowser); // Redirect all hyperlinks clicks
 		}
 
 		// A Post List is displayed
@@ -124,6 +124,7 @@ define(['jquery','core/theme-app','core/modules/storage','core/theme-tpl-tags','
     // Event bindings
     // All events are bound to #app-layout using event delegation as it is a permanent DOM element
     // They became available as soon as the target element is available in the DOM
+    // Single and page content click on hyperlinks bindings are done in screen:showed
 
 	var isMenuOpen = false; // Stores if the off-canvas menu is currently opened or closed
 
