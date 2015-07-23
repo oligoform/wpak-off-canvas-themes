@@ -68,6 +68,7 @@ define(['jquery','core/theme-app','core/modules/storage','core/theme-tpl-tags','
      */
 	App.on('screen:showed',function(current_screen,view){
 
+        // Show/Hide back button depending on the displayed screen
         if (TplTags.displayBackButton()) {
             $("#back-button").css("display","block");
 			$("#menu-button").css("display","none");
@@ -123,13 +124,15 @@ define(['jquery','core/theme-app','core/modules/storage','core/theme-tpl-tags','
         
     });
 
-    try {
+    /**
+     * @desc Customizing the iOS status bar to match the theme, relies on // https://build.phonegap.com/plugins/715
+     */
+    try { // Testing if the Cordova plugin is available
         StatusBar.overlaysWebView(false);
         StatusBar.styleDefault();
         StatusBar.backgroundColorByHexString("#F8F8F8");
     } catch(e) {
         console.log("StatusBar plugin not available");
-        // https://build.phonegap.com/plugins/715
     }
       
 	/**
@@ -155,7 +158,8 @@ define(['jquery','core/theme-app','core/modules/storage','core/theme-tpl-tags','
 	$("#app-layout").on("click","#menu-items li a",menuItemTap);
 	$("#app-layout").on("click","#content .content-item a",contentItemTap);
 
-	$("#app-layout").on("touchstart","#back-button",backButtonTapOn);
+	// Back button events
+    $("#app-layout").on("touchstart","#back-button",backButtonTapOn);
     $("#app-layout").on("touchend","#back-button",backButtonTapOff);
     
     /**

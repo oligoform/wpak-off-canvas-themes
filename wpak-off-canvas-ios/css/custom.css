@@ -42,21 +42,11 @@ body {
 }
 
 #app-menu {
-    -webkit-overflow-scrolling:touch;
+    -webkit-overflow-scrolling:touch; /* Enable srcolling bounce effect when reaching top or bottom */
 }
 
 .content {
-    -webkit-overflow-scrolling:touch;
-}
-
-.back-button {
-	position:absolute;
-	float: left;
-	background-repeat:no-repeat;
-	background-position:center;
-	background-image:url('../img/back-icon.svg');	
-	width:43px;
-	height:50px;
+    -webkit-overflow-scrolling:touch; /* Enable srcolling bounce effect when reaching top or bottom */
 }
 
 /**
@@ -96,6 +86,16 @@ body {
 
 .app-header h1 {
 	font-family:HelveticaNeue-Medium,sans-serif;
+}
+
+.back-button {
+	position:absolute;
+	float: left;
+	background-repeat:no-repeat;
+	background-position:center;
+	background-image:url('../img/back-icon.svg');	
+	width:43px;
+	height:50px;
 }
 
 
