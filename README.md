@@ -42,4 +42,11 @@ Differences you may notice:
 We tried to keep the source code of both themes as similar as possible. You'll see differences in *functions.js*, *custom.css* and *layout.html*.
 
 ## Cordova Plugins
-...
+WP-AppKit themes rely on Cordova plugins to:
+* Customize the iOS status bar: https://build.phonegap.com/plugins/505
+* Handle properly whether hyperlinks open an in app browser (iOS) or not (Android): https://build.phonegap.com/plugins/1169
+
+WP-AppKit export function adds these plugins automatically to your *config.xml* file. If you don't use the export, make sure to add them in order the themes to be able to work properly.
+
+## Responsive Images
+Themes hook into the WP-AppKit web services to modify the source code of images in the post content. It eases the way to style the responsive images later. See *modify-image-code.php* in the *php* folder of the themes.
