@@ -1,5 +1,7 @@
 **Wpak Off-Canvas are demo themes for iOS and Android mobile apps implementing an off-canvas menu.** They are designed to work with WP-AppKit, a WordPress plugin to create mobile apps connected to WordPress (more on that at http://getwpappkit.com).
 
+![wp-appkit-off-canvas-screenshots-1 5](https://cloud.githubusercontent.com/assets/6179747/8889585/5846e28e-32e0-11e5-9afa-0b9440fd6a62.png)
+
 # Installation
 * Download WP-AppKit: https://github.com/uncatcrea/wp-appkit
 * Install WP-AppKit as you would do for any other WordPress plugins (ie. drop the plugin folder in */wp-content/plugins*)
@@ -11,11 +13,12 @@
 
 If new to WP-AppKit, you might want to read this article: http://uncategorized-creations.com/1212/compiling-app-using-wp-appkit-phonegap-build/.
 
-![Screenshot of the iOS version](https://cloud.githubusercontent.com/assets/6179747/8889515/93f21a90-32dd-11e5-9273-b2dc250c5026.png)
-
-![Screenshot of the Android version](https://cloud.githubusercontent.com/assets/6179747/8889517/a4516a94-32dd-11e5-9e4d-f31df89e2b4a.png)
-
 # Theme's Overview
+
+Take a look at these videos to get a glimpse of the themes:
+* [Android Demo Video](https://www.youtube.com/watch?v=BHYoV1h89Ow)
+* [iOS Demo Video](https://www.youtube.com/watch?v=xSryx6hUyaU)
+
 ##What's implemented
 At the moment, Wpak Off-Canvas themes implement:
 * Obviously the off-canvas menu
