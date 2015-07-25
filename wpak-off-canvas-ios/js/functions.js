@@ -1,182 +1,212 @@
+/**
+ * All JavaScript required for the theme has to be placed in this file
+ * Use RequireJS define to import external JavaScript libraries
+ * To be imported, a JavaScript has to be a module (AMD)
+ * http://www.sitepoint.com/understanding-requirejs-for-effective-javascript-module-loading/
+ * If this is not the case: place the path to the library at the end of the define array
+ * Paths are relative to the app subfolder of the wp-app-kit plugin folder
+ * You don't need to specify the .js extensions
+    
+ * (AMD) jQuery          available as    $
+ * (AMD) Theme App Core  available as    App
+ * (AMD) Local Storage   available as    Storage
+ * (AMD) Template Tags   avaialble as    TplTags
+ * Velocity (http://julian.com/research/velocity/)
+ */
 define(['jquery','core/theme-app','core/modules/storage','core/theme-tpl-tags','theme/js/jquery.velocity.min'],function($,App,Storage,TplTags){
 
-	/* App Events */
+	/**
+     * App Events
+     */
 
-    // Refresh process begins
-    App.on('refresh:start',function(){
+    // @desc Refresh process begins
+	App.on('refresh:start',function(){
+		$("#refresh-button").removeClass("refresh-off").addClass("refresh-on");
+	});
 
-        // the refresh button begins to spin
-        $("#refresh-button").removeClass("refresh-off").addClass("refresh-on");
+    /**
+     * @desc Refresh process ends
+     * @param result
+     */
+	App.on('refresh:end',function(result){
 
-    });
-
-    // Refresh process ends
-    App.on('refresh:end',function(result){
-
-		// Reset scroll position
-        scrollTop();
-        Storage.clear('scroll-pos'); 
+		scrollTop(0);                   // Scroll to the top of the screen
+        Storage.clear('scroll-pos');    // Clear the previous memorized position in the local storage
 		
-		// Stop spinnning for the refresh button
-        $("#refresh-button").removeClass("refresh-on").addClass("refresh-off");
+		// The refresh icon stops to spin
+		$("#refresh-button").removeClass("refresh-on").addClass("refresh-off");
 		
-        // Change active items in the left menu
-		$("#menu li").removeClass("menu-active-item");
-		$("#menu li:first-child").addClass("menu-active-item");
+		// Select the current screen item in off-canvas menu
+        $("#menu-items li").removeClass("menu-active-item");
+		$("#menu-items li:first-child").addClass("menu-active-item");
 		
-		// Display if the refresh process has worked or not
-        // TODO : if an errors occurs we should not reset scroll position
-        if ( result.ok ) {
+		/**
+         * Display if the refresh process is a success or not
+         * @todo if an error occurs we should not reset scroll position
+         * @todo messages should be centralized to ease translations
+         */
+		if ( result.ok ) {
 			showMessage("Content updated successfully :)");
 		}else{
 			showMessage(result.message);
 		}
 
-	});
-
-	// Error occurs
-    App.on('error',function(error){
-
-        // Display error message
-        showMessage(error.message);
-
     });
 
-	// A new screen is displayed
-    App.on('screen:showed',function(current_screen,view){
-        //current_screen.screen_type can be 'list','single','page','comments'
-        
-		// iOS back button support
+	/**
+     * @desc An error occurs
+     * @param error
+     */
+	App.on('error',function(error){
+		showMessage(error.message);
+	});
+
+	/**
+     * @desc A new screen is displayed
+     * @param {object} current_screen - Screen types: list|single|page|comments
+     * @param view
+     */
+	App.on('screen:showed',function(current_screen,view){
+
+        // Show/Hide back button depending on the displayed screen
         if (TplTags.displayBackButton()) {
-			
-            // Display iOS back button
             $("#back-button").css("display","block");
 			$("#menu-button").css("display","none");
-		
         } else {
-			
-            // Display the menu button as iOS back button is not supported
             $("#back-button").css("display","none");
 			$("#menu-button").css("display","block");
-
         }
 
-		// Left menu is open
+        // Close off-canvas menu
         if (isMenuOpen) {
-
-			// Close the left menu
-            $("#content").css("left","85%");
+			$("#app-canvas").css("left","85%"); 
 			closeMenu();
+		}
 
-        }
-
-		// A post or a page is displayed
+		// A Post or a Page is displayed
         if (current_screen.screen_type=="single"||current_screen.screen_type=="page") {
-			
-            // Prepare <img> tags for styling
-            cleanImgTag();
-            
-            // Redirect all hyperlinks clicks
-            $("#container").on("click",".single-template a",openInBrowser);
-		
-        }
+			cleanImgTag(); // Prepare <img> tags for styling
+            $("#app-layout").on("click",".single-template a",openInBrowser); // Redirect all hyperlinks clicks
+		}
 
-		// A post list is displayed
+		// A Post List is displayed
         if( current_screen.screen_type == "list" ){
-			
-            // Retrieve any memorized scroll position
-            // If a position has been memorized, scroll to it
-            // If not, scroll to the top of the screen
+
+            /**
+             * Retrieve any memorized scroll position from the local storage
+             * If a position has been memorized, scroll to it
+             * If not, scroll to the top of the screen
+             */
             var pos = Storage.get("scroll-pos",current_screen.fragment);
 			if( pos !== null ){
 				$("#content").scrollTop(pos);
-            }else{
+			}else{
 				scrollTop();
 			}
 		}else{
-			scrollTop();
+			scrollTop(); // Scroll to the top of screen if we're not displaying a Post List (eg. a Post)
 		}
         
 	});
 
-    // About to change the current screen
+    /**
+     * @desc About to leave the current screen
+     * @param {object} current_screen - Screen types: list|single|page|comments
+     * @param queried_screen
+     * @param view
+     */
 	App.on('screen:leave',function(current_screen,queried_screen,view){
-		//current_screen.screen_type can be 'list','single','page','comments'
-		
-        // If the current screen is a list
-        // Memorize the current scroll position
+
+        // If the current screen is a Post List
         if( current_screen.screen_type == "list" ){
-			Storage.set("scroll-pos",current_screen.fragment,$("#content").scrollTop());
+			Storage.set("scroll-pos",current_screen.fragment,$("#content").scrollTop()); // Memorize the current scroll position in local storage
 		}
         
-	});
-    
-    /* PhoneGap Plugins Support */
-    
-    // Status Bar
-     try {
+    });
+
+    /**
+     * @desc Customizing the iOS status bar to match the theme, relies on // https://build.phonegap.com/plugins/715
+     */
+    try { // Testing if the Cordova plugin is available
         StatusBar.overlaysWebView(false);
         StatusBar.styleDefault();
         StatusBar.backgroundColorByHexString("#F8F8F8");
     } catch(e) {
-        alert("StatusBar plugin not available");
-        // https://build.phonegap.com/plugins/715
+        console.log("StatusBar plugin not available");
     }
-
-    // InApp Browser
+      
+	/**
+     * UI events and variables
+     */
     
-	/* UI Events */
-    
-	var isMenuOpen = false;
-
     // Event bindings
-	$("#container").on("touchstart","#menu-button",menuButtonTapOn);
-	$("#container").on("touchend","#menu-button",menuButtonTapOff);
+    // All events are bound to #app-layout using event delegation as it is a permanent DOM element
+    // They became available as soon as the target element is available in the DOM
+    // Single and page content click on hyperlinks bindings are done in screen:showed
 
-	$("#container").on("touchstart","#refresh-button",refreshTapOn);
-	$("#container").on("touchend","#refresh-button",refreshTapOff);
+	var isMenuOpen = false; // Stores if the off-canvas menu is currently opened or closed
 
-	$("#container").on("click","#menu li a",menuItemTap);
-	$("#container").on("click","#content .content-item a",contentItemTap);
+    // Menu Button events
+    $("#app-layout").on("touchstart","#menu-button",menuButtonTapOn);
+	$("#app-layout").on("touchend","#menu-button",menuButtonTapOff);
 
-	$("#container").on("touchstart","#back-button",backButtonTapOn);
-    $("#container").on("touchend","#back-button",backButtonTapOff);
+    // Refresh Button events
+    $("#app-layout").on("touchstart","#refresh-button",refreshTapOn);
+	$("#app-layout").on("touchend","#refresh-button",refreshTapOff);
 
-    /* Functions */
+    // Menu Item events
+	$("#app-layout").on("click","#menu-items li a",menuItemTap);
+	$("#app-layout").on("click","#content .content-item a",contentItemTap);
 
-    // Open left menu
-	function openMenu() {
+	// Back button events
+    $("#app-layout").on("touchstart","#back-button",backButtonTapOn);
+    $("#app-layout").on("touchend","#back-button",backButtonTapOff);
+    
+    /**
+     * Functions
+     */
 
-		$("#menu").css("display","block");
+    /**
+     * @desc open off-canvas menu
+     */
+    function openMenu() {
 
-        $("#content,#header").velocity({
+		$("#menu-items").css("display","block");
+
+        $("#app-canvas").velocity({
 			left:"85%",
 			},300, function() {
-				isMenuOpen=true;
+				setTimeout(function(){isMenuOpen=true;},150);
 			});
 	}
 
-	// Close left menu
-    function closeMenu(action,menuItem) {
+    /**
+     * @desc Close off-canvas menu
+     * @param action (1 means that we close the off-canvas menu after clicking on a menu item)
+     * @param menuItem
+     */
+	function closeMenu(action,menuItem) {
 
 		isMenuOpen = false;
 
-        $("#content,#header").velocity({
+        $("#app-canvas").velocity({
 			left:"0",
 		},300, function() {
 
-				$("#menu").css("display","none");
+				$("#menu-items").css("display","none");
 
-				if (action==1) {
+				// We have tapped a menu item, let's open the corresponding screen
+                if (action==1) {
 					App.navigate(menuItem.attr("href"));
 				}
 
 			});
 	}
 
-	// Determine if we open or close the left menu
-    function toggleMenu() {
-
+    /**
+     * @desc Open or close off-canvas menu (based on isMenuOpen variable)
+     */
+	function toggleMenu() {
 		if (isMenuOpen) {
 			closeMenu();
 		} else {
@@ -184,124 +214,135 @@ define(['jquery','core/theme-app','core/modules/storage','core/theme-tpl-tags','
 		}
 	}
 
-	// Finger presses on the menu button (1/2)
-    function menuButtonTapOn() {
-        // Effect
-		$("#menu-button").removeClass("button-tap-off").addClass("button-tap-on");
+    /**
+     * @desc Finger presses the menu button
+     */
+	function menuButtonTapOn() {
+        $("#menu-button").removeClass("button-tap-off").addClass("button-tap-on"); // Switch icon state (on)
 	}
 
-	// Finger unpresses the menu button (2/2)
+    /**
+     * @desc Finger releases the menu button
+     * @todo use e.preventDefault()
+     */
 	function menuButtonTapOff() {
-
-		// Effect
-        $("#menu-button").removeClass("button-tap-on").addClass("button-tap-off");
-		
-        // We open or close the left menu according to its current state
-        toggleMenu();
-		
-        return false;
-
+		$("#menu-button").removeClass("button-tap-on").addClass("button-tap-off"); // Switch icon state (off)
+		toggleMenu(); // Open or close off-canvas menu
+		return false;
 	}
 
-	// Finger presses a menu item
-    function menuItemTap() {	
+    /**
+     * @desc Finger taps one of the off-canvas menu item
+     * @todo use e.preventDefault()
+     */
+	function menuItemTap() {	
 
 		if (isMenuOpen) {
 
-			// Highlight the new current item
-            $("#menu li").removeClass("menu-active-item");
+			// Select tapped item
+            $("#menu-items li").removeClass("menu-active-item"); // Unselect all menu items
 			$(this).closest("li").addClass("menu-active-item");
 
-			// Close the left menu
-            closeMenu(1,$(this));
+            // Close menu and navigate to the item's corresponding screen
+            // @todo use navigate here rather than in close menu
+			closeMenu(1,$(this));
+            
 		}
 
 		return false;
 	}
 
-	// Finger presses an item in a list
-    function contentItemTap() {
+    /**
+     * @desc Finger taps one of the post item in a post list
+     * @todo use e.preventDefault()
+     */
+	function contentItemTap() {
 
 		if (!isMenuOpen) {
-			
-            // Change the current screen
-            App.navigate($(this).attr("href"));
-		
-        } else {
-            
-            // If the menu is open, close it
-			closeMenu();
-
-        }
+			App.navigate($(this).attr("href")); // Display post
+		} else {
+			closeMenu(); // Tapping a post item when the off-canvas menu is opened closes it
+		}
 		return false;
 	}
 
-	// Display success/failure message
-    function showMessage(msgText) {
-		$("#refresh-message").html(msgText);
-		$("#refresh-message").removeClass("message-off").addClass("message-on");
+    
+    /**
+     * @desc Show a message in the message bar during 3 sec
+     */
+	function showMessage(msgText) {
+		$("#app-message-bar").html(msgText);
+		$("#app-message-bar").removeClass("message-off").addClass("message-on");
 		setTimeout(hideMessage,3000);
 	}
 
-	// Hide success/failure message
-    function hideMessage() {
-		$("#refresh-message").removeClass("message-on").addClass("message-off");	
-		$("#refresh-message").html("");
+    /**
+     * @desc Hide the message bar
+     */
+	function hideMessage() {
+		$("#app-message-bar").removeClass("message-on").addClass("message-off");	
+		$("#app-message-bar").html("");
 	}
 
-	// Finger presses refresh button (1/2)
-    function refreshTapOn() {
+    /**
+     * @desc Finger taps the refresh button
+     */
+	function refreshTapOn() {
 		$("#refresh-button").removeClass("button-touch-off").addClass("button-touch-on");
 	}
 
-	// Finger unpresses refresh button (2/2)
-    function refreshTapOff() {
-		
-        // TODO : give the ability to stop the refresh manually
-        
-        // Check if app's refreshing
-        if (!App.isRefreshing()) {
+    /**
+     * @desc Finger releases the refresh button
+     */
+	function refreshTapOff() {
+		if (!App.isRefreshing()) { // Check if the app is not already refreshing content
 			$("#refresh-button").removeClass("button-touch-on").addClass("button-touch-off");
 			$("#refresh-button").removeClass("refresh-off").addClass("refresh-on");
-			
-            // Start the refresh process
-            App.refresh();
+			App.refresh(); // Refresh content
 		}
-	
-    }
+	}
 
-	// Stop refresh button animation when refresh ends
-    function stopRefresh() {
+    /**
+     * @desc Stop spinning when refresh ends
+     */
+	function stopRefresh() {
 		$("#refresh-button").removeClass("refresh-on").addClass("refresh-off");	
 	}
 
-	// Finger presses iOS back button (1/2)
     function backButtonTapOn() {
 		$("#back-button").removeClass("button-tap-off").addClass("button-tap-on");
 	}
 
-	// Finger unpresses iOS back button (2/2)
     function backButtonTapOff() {
 		$("#back-button").removeClass("button-tap-on").addClass("button-tap-off");
-		
-        // Go back to the previous screen
         App.navigate(TplTags.getPreviousScreenLink());
 	}
-
-    // Scroll to the top of the screen
-    function scrollTop(){
-		window.scrollTo(0,0);
+    
+    /**
+     * @desc Scroll to the top of the screen
+     * @param pos (in px)
+     */
+    function scrollTop(pos){
+        $("#content").scrollTop(pos);        
 	}
     
-    // Prepare <img> tags for proper styling (responsive)
+    /**
+     * @desc Prepare <img> tags for proper styling (responsive)
+     */
 	function cleanImgTag() {
-		$(".single-template img").removeAttr("width height");
-		$(".single-template .wp-caption").removeAttr("style");
-		$(".single-template .wp-caption a").removeAttr("href");
+		$(".single-template img").removeAttr("width height"); // Remove all width and height attributes
+		$(".single-template .wp-caption").removeAttr("style"); // Remove any style attributes
+		$(".single-template .wp-caption a").removeAttr("href"); // Remove any hyperlinks attached to an image
 	}
     
-    // Hyperlinks clicks handler
-    // Relies on the InApp Browser PhoneGap Plugin
+    /**
+     * @desc Hyperlinks click handler
+     * @desc Relies on the InAppBrowser PhoneGap Core Plugin / https://build.phonegap.com/plugins/233
+     * @desc Target _blank calls an in app browser (iOS behavior)
+     * @desc Target _system calls the default browser (Android behavior)
+     * @param {object} e
+     * @todo harmonize ways of naming event object and preventDefault() position
+     */
     function openInBrowser(e) {
         window.open(e.target.href,"_blank","location=yes");
         e.preventDefault();

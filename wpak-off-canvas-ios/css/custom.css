@@ -1,20 +1,72 @@
+/**
+ * common.css : general rules (applied to all templates)
+ * custom.css : os specific rules (applied to all templates)
+ * post-detail.css : single.html and page.html specific rules
+ * post-list.css : archive.html specific rules
+ */
+
+
+
+/**
+ * @desc Fixes
+ */
+
+
+/**
+ * @desc Fixes the menu scrollbar bug
+ */
+.off-canvas-menu {
+	overflow-y: auto;
+}
+
+
+
+/**
+ * @desc General rules
+ */
+
+
 body {
 	background-color:#182C36;
 	font-family:"HelveticaNeue", sans-serif;
 }
 
-.header {
-	background-color:#F8F8F8;
-	border-bottom:1px #B2B2B2 solid;}
+.button-tap-on {
+	opacity:0.1;
+	-webkit-transition:opacity 0.1s linear;
+}
 
-.message {
+.button-tap-off {
+	opacity:1;
+	-webkit-transition:opacity 0.1s linear;
+}
+
+#app-menu {
+    -webkit-overflow-scrolling:touch; /* Enable srcolling bounce effect when reaching top or bottom */
+}
+
+.content {
+    -webkit-overflow-scrolling:touch; /* Enable srcolling bounce effect when reaching top or bottom */
+}
+
+/**
+ * @desc Action Bar
+ */
+
+
+.app-header {
+	background-color:#F8F8F8;
+	border-bottom:1px #B2B2B2 solid;
+}
+
+.app-message-bar {
 	background-color:#ff5555;
 	color:#3D1414;
 	border-top:1px #A13636 solid;
 	border-bottom:1px #A13636 solid;
 }
 
-.burger {
+.menu-button {
 	background-image:url('../img/menu-icon.svg');	
 	width:43px;
 	height:50px;
@@ -32,25 +84,45 @@ body {
 	background-image:url('../img/refresh-on-icon.svg');
 }
 
-.header h1 {
+.app-header h1 {
 	font-family:HelveticaNeue-Medium,sans-serif;
 }
 
-/* Post List */
+.back-button {
+	position:absolute;
+	float: left;
+	background-repeat:no-repeat;
+	background-position:center;
+	background-image:url('../img/back-icon.svg');	
+	width:43px;
+	height:50px;
+}
+
+
+
+/**
+ * @desc Post list
+ */
+
 
 .list-template .list-title {
 	font-family:HelveticaNeue-Medium,sans-serif;
 }
 
 .list-template .content-date {
-	font-family:HelveticaNeue-Thin,sans-serif;	
+    font-family:HelveticaNeue-Thin,sans-serif;
 }
 
 .list-template h2 {
-	font-family:HelveticaNeue-Medium,sans-serif;	
+	font-family:HelveticaNeue-Medium,sans-serif;
 }
 
-/* Post Detail */
+
+
+/**
+ * @desc Post detail
+ */
+
 
 .single-template {
 	font-family:HelveticaNeue-Light,sans-serif;
@@ -105,31 +177,5 @@ body {
 }
 
 .single-template .post-author {
-	font-family:HelveticaNeue-Medium;	
-}
-
-/* Back Button */
-
-.back-button {
-	position:absolute;
-	float: left;
-	background-repeat:no-repeat;
-	background-position:center;
-	background-image:url('../img/back-icon.svg');	
-	width:43px;
-	height:50px;
-}
-
-.button-tap-on {
-	opacity:0.1;
-	-webkit-transition:opacity 0.1s linear;
-}
-
-.button-tap-off {
-	opacity:1;
-	-webkit-transition:opacity 0.1s linear;
-}
-
-.drawer {
-	overflow-y:auto; /* fix the menu scrollbar bug */
+	font-family:HelveticaNeue-Medium;
 }
