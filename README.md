@@ -2,6 +2,8 @@
 
 ![wp-appkit-off-canvas-screenshots-1 5](https://cloud.githubusercontent.com/assets/6179747/8889585/5846e28e-32e0-11e5-9afa-0b9440fd6a62.png)
 
+You might want to check these other fine themes: [Wpak Tabs](https://github.com/uncatcrea/wpak-tabs-themes)
+
 # Installation
 * Download WP-AppKit: https://github.com/uncatcrea/wp-appkit
 * Install WP-AppKit as you would do for any other WordPress plugins (ie. drop the plugin folder in */wp-content/plugins*)
