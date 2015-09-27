@@ -11,10 +11,10 @@
  * (AMD) Theme App Core  available as    App
  * (AMD) Local Storage   available as    Storage
  * (AMD) Template Tags   avaialble as    TplTags
- * Velocity (http://julian.com/research/velocity/)
+ * (AMD) Velocity 1.2.3  available as    Velocity (but used with jQuery) (http://julian.com/research/velocity/)
  */
-define(['jquery','core/theme-app','core/modules/storage','core/theme-tpl-tags','theme/js/jquery.velocity.min'],function($,App,Storage,TplTags){
-
+define(['jquery','core/theme-app','core/modules/storage','core/theme-tpl-tags','theme/js/velocity.min','theme/js/transitions'],function($,App,Storage,TplTags,Velocity,Transitions){
+    
 	/**
      * App Events
      */
@@ -139,6 +139,8 @@ define(['jquery','core/theme-app','core/modules/storage','core/theme-tpl-tags','
     // Menu Item events
 	$("#app-layout").on("click","#menu-items li a",menuItemTap);
 	$("#app-layout").on("click","#content .content-item a",contentItemTap);
+
+    App.setAutoScreenTransitions( Transitions.replace, Transitions.slideLeft, Transitions.slideRight );
 
     
     
